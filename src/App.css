@@ -1,0 +1,35 @@
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.word-display {
+  font-size: 2rem;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.letter {
+  display: inline-block;
+  width: 30px;
+  margin: 0 5px;
+  border-bottom: 2px solid #000;
+  text-align: center;
+}
+
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.keyboard button {
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+

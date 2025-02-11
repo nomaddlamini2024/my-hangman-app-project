@@ -9,15 +9,16 @@ function App() {
   const [word, setWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [remainingAttempts, setRemainingAttempts] = useState(6);
-  const [gameStatus, setGameStatus] = useState("playing"); // 'won', 'lost', 'playing'
+  // 'won', 'lost', 'playing'
+  const [gameStatus, setGameStatus] = useState("playing"); 
 
-  // Initialize the word once
+  // Initialising the word once
   useEffect(() => {
     const randomWord = words[Math.floor(Math.random() * words.length)];
     setWord(randomWord);
   }, []);
 
-  // Check for win or loss
+  // Checking for win or loss
   useEffect(() => {
     if (remainingAttempts === 0) {
       setGameStatus("lost");

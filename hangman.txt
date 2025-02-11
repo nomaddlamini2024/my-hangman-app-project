@@ -1,0 +1,352 @@
+App.js
+
+import React, { useState, useEffect } from "react";
+import GameBoard from "./components/GameBoard";
+import HelpModal from "./components/HelpModal";
+import "./App.css";
+
+const words = ["apple", "banana", "grapefruit", "strawberry", 
+"watermelon"];
+
+function App() {
+  const [word, setWord] = useState("");
+  const [guessedLetters, setGuessedLetters] = useState([]);
+  const [remainingAttempts, setRemainingAttempts] = useState(6);
+  const [gameStatus, setGameStatus] = useState("playing"); // 'won', 
+  'lost', 'playing'
+
+  // Initialize the word once
+  useEffect(() => {
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    setWord(randomWord);
+  }, []);
+
+  // Check for win or loss
+  useEffect(() => {
+    if (remainingAttempts === 0) {
+      setGameStatus("lost");
+    } else if (word && word.split("").every((letter) 
+    => guessedLetters.includes(letter))) {
+      setGameStatus("won");
+    }
+  }, [guessedLetters, remainingAttempts, word]);
+
+  const handleGuess = (letter) => {
+    if (!guessedLetters.includes(letter) && gameStatus === "playing") {
+      setGuessedLetters([...guessedLetters, letter]);
+      if (!word.includes(letter)) {
+        setRemainingAttempts((prev) => prev - 1);
+      }
+    }
+  };
+
+  const restartGame = () => {
+    const newWord = words[Math.floor(Math.random() * words.length)];
+    setWord(newWord);
+    setGuessedLetters([]);
+    setRemainingAttempts(6);
+    setGameStatus("playing");
+  };
+
+  return (
+    <div className="app-container">
+      <h1 className="text-center">Hangman Game</h1>
+      {word && <GameBoard word={word} guessedLetters={guessedLetters} 
+      remainingAttempts={remainingAttempts} onGuess={handleGuess} 
+      gameStatus={gameStatus} onRestart={restartGame} />}
+      <HelpModal />
+    </div>
+  );
+}
+
+export default App;
+
+
+
+index.js
+
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+
+import App from "./App";
+
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+
+
+
+package.json
+
+{
+  "name": "react",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.tsx",
+  "dependencies": {
+    "bootstrap": "5.3.3",
+    "react": "^19.0.0",
+    "react-bootstrap": "2.10.9",
+    "react-dom": "^19.0.0",
+    "react-scripts": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "loader-utils": "3.2.1",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
+}
+
+
+
+App.css
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.word-display {
+  font-size: 2rem;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.letter {
+  display: inline-block;
+  width: 30px;
+  margin: 0 5px;
+  border-bottom: 2px solid #000;
+  text-align: center;
+}
+
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.keyboard button {
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+
+
+styles.css
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+
+
+index.html
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, 
+    shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      manifest.json provides metadata used when your web app is added to 
+      the homescreen on Android. 
+      See https://developers.google.com/web/fundamentals/
+      engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during 
+      the build. Only files inside the `public` folder can be referenced 
+      from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" 
+      will work correctly both with client-side routing and a non-root 
+      public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
+
+
+
+GameBoard.js
+
+import React from "react";
+import HangmanFigure from "./HangmanFigure";
+import WordDisplay from "./WordDisplay";
+import Keyboard from "./Keyboard";
+
+function GameBoard({ word, guessedLetters, remainingAttempts, onGuess, 
+gameStatus, onRestart }) {
+  return (
+    <div className="game-board">
+      <HangmanFigure attemptsLeft={remainingAttempts} />
+      <WordDisplay word={word} guessedLetters={guessedLetters} />
+
+      {gameStatus === "playing" ? <Keyboard onGuess={onGuess} 
+      guessedLetters={guessedLetters} /> : <h2>{gameStatus === "won" ? 
+      "You Won!" : "Game Over!"}</h2>}
+
+      {/* Always show the Restart button */}
+      <button className="btn btn-primary restart-button" onClick={onRestart}>
+        Restart Game
+      </button>
+    </div>
+  );
+}
+
+export default GameBoard;
+
+
+
+HangmanFigure.js
+
+import React from "react";
+import img0 from "./assets/0.jpg";
+import img1 from "./assets/1.jpg";
+import img2 from "./assets/2.jpg";
+import img3 from "./assets/3.jpg";
+import img4 from "./assets/4.jpg";
+import img5 from "./assets/5.jpg";
+import img6 from "./assets/6.jpg";
+import img7 from "./assets/7.jpg";
+import img8 from "./assets/8.jpg";
+import img9 from "./assets/9.jpg";
+import img10 from "./assets/10.jpg";
+
+const images = [img0, img1, img2, img3, img4, img5, img6, 
+img7, img8, img9, img10];
+
+const HangmanFigure = ({ attemptsLeft }) => {
+  const currentImage = images[10 - attemptsLeft];
+
+  return (
+    <div className="hangman-figure">
+      <img src={currentImage} alt={`Hangman step ${10 - attemptsLeft}`} 
+      style={{ width: "200px" }} />
+    </div>
+  );
+};
+
+export default HangmanFigure;
+
+
+
+HelpModal.js
+
+import React, { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
+
+const HelpModal = () => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <>
+      <Button variant="info" onClick={() => setShow(true)}>
+        Help
+      </Button>
+
+      <Modal show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>How to Play Hangman</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Guess the word by selecting letters. If you make too many 
+          incorrect guesses, you lose!</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+export default HelpModal;
+
+
+
+Keyboard.js
+
+import React from "react";
+
+const Keyboard = ({ onGuess, guessedLetters }) => {
+  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+
+  return (
+    <div className="keyboard">
+      {letters.map((letter) => (
+        <button key={letter} className="btn btn-secondary" onClick={() 
+        => onGuess(letter)} disabled={guessedLetters.includes(letter)}>
+          {letter}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+export default Keyboard;
+
+
+
+WordDiplay.js
+
+import React from "react";
+
+const WordDisplay = ({ word, guessedLetters }) => {
+  return (
+    <div className="word-display">
+      {word.split("").map((letter, index) => (
+        <span key={index} className="letter">
+          {guessedLetters.includes(letter) ? letter : "_"}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+export default WordDisplay;

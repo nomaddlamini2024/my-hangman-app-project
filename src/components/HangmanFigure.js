@@ -1,3 +1,7 @@
+/*Importing React in order for code make use of functions and objects in 
+React library so we can create and manage components and their state 
+ */
+
 import React from "react";
 import img0 from "./assets/0.jpg";
 import img1 from "./assets/1.jpg";
